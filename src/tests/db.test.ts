@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import connectDB from '../config/db';
+import { connectDB, disconnectDB } from '../config/db';
 
 describe('Database Connection', () => {
     beforeAll(async () => {
@@ -11,6 +11,6 @@ describe('Database Connection', () => {
     });
 
     afterAll(async () => {
-        await mongoose.disconnect();
+        await disconnectDB();
     });
 });
