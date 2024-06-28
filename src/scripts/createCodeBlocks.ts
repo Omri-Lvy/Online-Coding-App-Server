@@ -6,58 +6,65 @@ dotenv.config();
 
 const createCodeBlocks = async () => {
     try {
-        await connectDB('test');
+        await connectDB('codeblocks');
 
         const codeBlocks = [
             {
-                title: 'Hello World',
-                code: 'console.log("Hello, World!");',
-                instructions: 'Write code that prints "Hello World" to the console.'
+                title: "JavaScript Data Types",
+                code: `// Your code here`,
+                solution: `const pi = 3.14; \nlet person = "John Doe";`,
+                instructions: "Declare a constant 'pi' and set it to 3.14. Also, declare a variable 'person' and initialize it with the string 'John Doe'."
             },
             {
-                title: 'Variables and Data Types',
-                code: 'let name = "John";\nlet age = 30;\nlet isStudent = true;',
-                instructions: 'Declare variables of different data types: a string, a number, and a boolean. Use the variable names "name", "age", and "isStudent".'
+                title: "JavaScript Arithmetic Operators",
+                code: `let x = 10; \nlet y = 2;`,
+                solution: `let x = 10; \nlet y = 2; \nlet add = x + y; \nlet subtract = x - y; \nlet multiply = x * y; \nlet divide = x / y;`,
+                instructions: "Declare two variables 'x' and 'y' and initialize them with 10 and 2, respectively. Perform addition, subtraction, multiplication, and division, storing each result in new variables 'add', 'subtract', 'multiply', and 'divide'."
             },
             {
-                title: 'Simple Function',
-                code: 'function greet(name) {\n  return `Hello, ${name}!`;\n}',
-                instructions: 'Write a function named "greet" that takes a name as an argument and returns a greeting message.'
+                title: "Creating an Array",
+                code: `// Your code here`,
+                solution: `const cars = ["Saab", "Volvo", "BMW"];`,
+                instructions: "Declare a constant 'cars' and initialize it with an array containing the strings 'Saab', 'Volvo', and 'BMW'."
             },
             {
-                title: 'Arrow Functions',
-                code: 'const add = (a, b) => a + b;',
-                instructions: 'Write an arrow function named "add" that takes two numbers as arguments and returns their sum.'
+                title: "For Loop",
+                code: `// Your code here`,
+                solution: `// Your code here\nfor (let i = 0; i < 5; i++) {\nconsole.log(i)\n}`,
+                instructions: "Write a for loop that iterates from 0 to 4. Inside the loop, use console.log to print each number."
             },
             {
-                title: 'For Loop',
-                code: 'for (let i = 0; i < 5; i++) {\n  console.log(i);\n}',
-                instructions: 'Write a for loop that prints numbers from 0 to 4 to the console.'
+                title: "Object Destructuring",
+                code: `const person = {\nfirstName: "John",\nlastName: "Doe"};\n // Your code here`,
+                solution: `const person = {\nfirstName: "John",\nlastName: "Doe"};\n let {lastName, firstName} = person;`,
+                instructions: "Use object destructuring to extract 'firstName' and 'lastName' from the 'person' object."
             },
             {
-                title: 'Arrays and Objects',
-                code: 'const fruits = ["apple", "banana", "cherry"];\nconst person = { name: "Alice", age: 25, city: "Wonderland" };',
-                instructions: 'Declare an array named "fruits" and an object named "person" with name, age, and city properties.'
+                title: "Using Template Literals",
+                code: `const firstName = "John";\n const lastName = "Doe";\n // Your code here`,
+                solution: "const fullName = `${firstName} ${lastName}`;\nconsole.log(fullName);",
+                instructions: "Declare a variable 'fullName' and use template literals to combine 'firstName' and 'lastName' into a single string."
             },
             {
-                title: 'Async/Await',
-                code: 'async function fetchData(url) {\n  const response = await fetch(url);\n  const data = await response.json();\n  return data;\n}',
-                instructions: 'Write an async function named "fetchData" that fetches data from a given URL and returns the JSON response.'
+                title: "Arrow Functions",
+                code: `// Your code here`,
+                solution: `const square = x => x * x;`,
+                instructions: "Define an arrow function named 'square' that accepts one parameter and returns the square of that parameter."
             },
             {
-                title: 'DOM Manipulation',
-                code: 'document.getElementById("myButton").addEventListener("click", function() {\n  document.getElementById("myText").textContent = "Button Clicked!";\n});',
-                instructions: 'Write code to add an event listener to a button with ID "myButton" that changes the text of an element with ID "myText" when clicked.'
-            },
-            {
-                title: 'Try/Catch',
-                code: 'try {\n  let result = riskyFunction();\n} catch (error) {\n  console.error("An error occurred:", error);\n}',
-                instructions: 'Write code that calls a function named "riskyFunction" inside a try block and handles any errors in a catch block.'
-            },
-            {
-                title: 'Class and Inheritance',
-                code: 'class Animal {\n  constructor(name) {\n    this.name = name;\n  }\n\n  speak() {\n    console.log(`${this.name} makes a noise.`);\n  }\n}\n\nclass Dog extends Animal {\n  speak() {\n    console.log(`${this.name} barks.`);\n  }\n}\n\nconst dog = new Dog("Rex");\ndog.speak();',
-                instructions: 'Write a class named "Animal" with a "speak" method, and a class named "Dog" that inherits from Animal and overrides the "speak" method.'
+                title: "Using Fetch to Load Data",
+                code: `async function fetchData() {\n // Your code here\n}`,
+                solution: `async function fetchData() {\n 
+                    try {
+                        const response = await fetch('https://api.example.com/data');
+                        const data = await response.json();
+                        console.log("Data fetched successfully:", data);
+                    } catch (error) {
+                        console.error("Failed to fetch data:", error);
+                    }
+                }
+                fetchData();`,
+                instructions: "Write an asynchronous function 'fetchData' that uses fetch to retrieve data from 'https://api.example.com/data', parses the JSON response, and logs it. Include error handling to catch and log any errors during the fetch operation."
             }
         ];
 

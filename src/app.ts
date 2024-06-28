@@ -8,35 +8,84 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const app: Application = express();
-const server = http.createServer(app);
-const io = new Server(server);
+const origin = process.env.ENV === 'development' ? '*' : 'https://code-blocks.vercel.app';
 
-connectDB(process.env.ENV as string === 'development' ? 'test' : 'code-blocks');
+const app: Application = express();
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: origin,
+        methods: ['GET', 'POST'],
+    }
+});
+
+connectDB("codeblocks");
 
 app.use(express.json());
 app.use(cors());
 
 app.use('/code-blocks', codeBlocksRouter);
 
+const userRoles: { [codeBlockId: string]: { mentor?: string, student?: string } } = {};
+
 io.on('connection', (socket) => {
     console.log('a user connected');
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
+
+    socket.on('joinCodeBlock', (codeBlockId: string) => {
+        if (!userRoles[codeBlockId]) {
+            userRoles[codeBlockId] = {};
+        }
+
+        if (!userRoles[codeBlockId].mentor) {
+            userRoles[codeBlockId].mentor = socket.id;
+            socket.emit('role', 'mentor');
+        } else if (!userRoles[codeBlockId].student) {
+            userRoles[codeBlockId].student = socket.id;
+            socket.emit('role', 'student');
+        } else {
+            socket.emit('role', 'full');
+            return;
+        }
+
+        socket.join(codeBlockId);
+        console.log(`User ${socket.id} joined code block ${codeBlockId} as ${userRoles[codeBlockId].mentor === socket.id ? 'mentor' : 'student'}`);
     });
 
-    socket.on('codeChange', (data) => {
-        socket.broadcast.emit('codeChange', data);
+    socket.on('codeChange', (data: { codeBlockId: string, code: string }) => {
+        socket.to(data.codeBlockId).emit('codeUpdate', data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+        for (const codeBlockId in userRoles) {
+            if (userRoles[codeBlockId].mentor === socket.id) {
+                console.log(`Mentor ${socket.id} left code block ${codeBlockId}`)
+                delete userRoles[codeBlockId].mentor; // Clean up the mentor role
+                if (userRoles[codeBlockId].student) {
+                    const studentSocket = io.sockets.sockets.get(userRoles[codeBlockId].student);
+                    if (studentSocket) {
+                        console.log(`Disconnecting student ${userRoles[codeBlockId].student}`)
+                        studentSocket.disconnect(true); // Disconnect user if mentor leaves
+                        delete userRoles[codeBlockId].student; // Clean up the student role
+                    }
+                }
+            } else if (userRoles[codeBlockId].student === socket.id) {
+                console.log(`Student ${socket.id} left code block ${codeBlockId}`)
+                const studentSocket = io.sockets.sockets.get(userRoles[codeBlockId].student);
+                delete userRoles[codeBlockId].student;
+                studentSocket?.disconnect(true); // Disconnect user if student leaves
+            }
+        }
     });
 });
 
 const PORT: string | number = process.env.PORT || 3000;
-server.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
 const shutdown = () => {
-    server.close(() => {
+    httpServer.close(() => {
         console.log('Server closed');
         disconnectDB();
     });
@@ -45,4 +94,4 @@ const shutdown = () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-export default app;
+export { httpServer, io, app, shutdown };

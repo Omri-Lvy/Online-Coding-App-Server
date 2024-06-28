@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const connectDB = async (dbName: string = 'test'): Promise<void> => {
+export const connectDB = async (dbName: string = 'codeblocks'): Promise<void> => {
     try {
         const mongoURI: string = (process.env.MONGO_URI as string).replace('<dbName>', dbName);
         if (!mongoURI) {

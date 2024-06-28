@@ -1,7 +1,6 @@
 import {describe} from "node:test";
 import {connectDB, disconnectDB} from "../config/db";
-import CodeBlockModel, { ICodeBlock } from '../models/CodeBlockModel';
-import mongoose from "mongoose";
+import CodeBlockModel from '../models/CodeBlockModel';
 
 
 describe('CodeBlockModel', () => {

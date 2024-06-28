@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface ICodeBlock extends Document {
     title: string;
     code: string;
+    solution?: string;
     instructions?: string;
 }
 
@@ -14,6 +15,10 @@ const CodeBlockSchema: Schema = new Schema({
     code: {
         type: String,
         required: true,
+    },
+    solution: {
+        type: String,
+        required: false,
     },
     instructions: {
         type: String,
