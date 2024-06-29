@@ -1,4 +1,4 @@
-import { httpServer } from "../app";
+import { httpServer } from "../server";
 
 module.exports = async () => {
     if (httpServer.listening) {

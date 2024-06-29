@@ -10,8 +10,8 @@ dotenv.config();
 
 const origin = process.env.ENV === 'development' ? '*' : 'https://code-blocks.vercel.app';
 
-const app: Application = express();
-const httpServer = http.createServer(app);
+const server: Application = express();
+const httpServer = http.createServer(server);
 const io = new Server(httpServer, {
     cors: {
         origin: origin,
@@ -21,10 +21,10 @@ const io = new Server(httpServer, {
 
 connectDB("codeblocks");
 
-app.use(express.json());
-app.use(cors());
+server.use(express.json());
+server.use(cors());
 
-app.use('/code-blocks', codeBlocksRouter);
+server.use('/code-blocks', codeBlocksRouter);
 
 const userRoles: { [codeBlockId: string]: { mentor?: string, student?: string, watchers?: string[] } } = {};
 
@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
             userRoles[codeBlockId] = { watchers: [] };
         }
 
-        if (!userRoles[codeBlockId].mentor) {
+        if (userRoles[codeBlockId] && !userRoles[codeBlockId].mentor) {
             userRoles[codeBlockId].mentor = socket.id;
             console.log(`User ${socket.id} joined code block ${codeBlockId} as mentor`);
             socket.emit('role', 'mentor');
@@ -53,7 +53,6 @@ io.on('connection', (socket) => {
         }
 
         socket.join(codeBlockId);
-        console.log(userRoles);
     });
 
     socket.on('codeChange', (data: { codeBlockId: string, code: string }) => {
@@ -61,7 +60,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('leaveCodeBlock', (codeBlockId: string) => {
-        if (userRoles[codeBlockId].mentor === socket.id) {
+        if (userRoles[codeBlockId] && userRoles[codeBlockId].mentor === socket.id) {
             console.log(`Mentor ${socket.id} left code block ${codeBlockId}`);
             // Disconnect everyone in the room
             if (userRoles[codeBlockId].student) {
@@ -82,14 +81,13 @@ io.on('connection', (socket) => {
             }
             // Clean up all roles
             delete userRoles[codeBlockId];
-        } else if (userRoles[codeBlockId].student === socket.id) {
+        } else if (userRoles[codeBlockId] && userRoles[codeBlockId].student === socket.id) {
             console.log(`Student ${socket.id} left code block ${codeBlockId}`);
             delete userRoles[codeBlockId].student;
-        } else if (userRoles[codeBlockId].watchers?.includes(socket.id)) {
+        } else if (userRoles[codeBlockId] && userRoles[codeBlockId].watchers?.includes(socket.id)) {
             console.log(`Watcher ${socket.id} left code block ${codeBlockId}`);
             userRoles[codeBlockId].watchers = userRoles[codeBlockId].watchers?.filter(watcherId => watcherId !== socket.id);
         }
-        console.log(userRoles);
     });
 
     socket.on('disconnect', () => {
@@ -124,7 +122,6 @@ io.on('connection', (socket) => {
                 userRoles[codeBlockId].watchers = userRoles[codeBlockId].watchers?.filter(watcherId => watcherId !== socket.id);
             }
         }
-        console.log(userRoles);
     });
 
 
@@ -159,5 +156,5 @@ const shutdown = () => {
 process.on('SIGINT', () => shutdown().then(() => process.exit()));
 process.on('SIGTERM', () => shutdown().then(() => process.exit()));
 
-export default app;
+export default server;
 export { httpServer };
