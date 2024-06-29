@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const origin = process.env.ENV === 'development' ? '*' : 'https://code-blocks.vercel.app';
+const origin = process.env.ENV === 'development' ? '*' : process.env.CLIENT_URL;
 
 const server: Application = express();
 const httpServer = http.createServer(server);
