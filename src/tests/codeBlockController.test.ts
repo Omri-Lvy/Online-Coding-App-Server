@@ -31,8 +31,4 @@ describe('CodeBlockModel Controller', () => {
         expect(res.status).toBe(404);
         expect(res.body.message).toBe('Code Block not found');
     });
-
-    afterAll(async () => {
-        await disconnectDB();
-    });
 });

@@ -1,22 +1,13 @@
 import { io as Client } from "socket.io-client";
-import { io as IoServer, httpServer, shutdown } from "../app"; // Ensure correct path
-
 
 
 describe("socket.io tests", () => {
 
-    beforeAll(() => {
-        IoServer.attach(httpServer);
-    });
-
-    afterAll(() => {
-        shutdown();
-    })
+    const PORT: string | number = process.env.PORT || 3000;
 
     test("should connect and handle joining a code block", done => {
-        console.log("PORT: ", (httpServer.address() as any).port);
-        const clientSocket = Client(`http://localhost:${(httpServer.address() as any).port}`);
-        const clientSocket2 = Client(`http://localhost:${(httpServer.address() as any).port}`);
+        const clientSocket = Client(`http://localhost:${PORT}`);
+        const clientSocket2 = Client(`http://localhost:${PORT}`);
         const codeBlockId = "123";
         clientSocket.on("connect", () => {
             clientSocket.emit("joinCodeBlock", codeBlockId);
@@ -39,8 +30,8 @@ describe("socket.io tests", () => {
 
     test("should handle code changes and update other clients", done => {
         const codeBlockId = "123";
-        const clientSocket = Client(`http://localhost:${(httpServer.address() as any).port}`);
-        const clientSocket2 = Client(`http://localhost:${(httpServer.address() as any).port}`);
+        const clientSocket = Client(`http://localhost:${PORT}`);
+        const clientSocket2 = Client(`http://localhost:${PORT}`);
 
         clientSocket.on("connect", () => {
             clientSocket.emit("joinCodeBlock", codeBlockId);
@@ -66,8 +57,8 @@ describe("socket.io tests", () => {
 
     test("student should be disconnected if mentor disconnects", (done) => {
         const codeBlockId = "123";
-        const mentor = Client(`http://localhost:${(httpServer.address() as any).port}`);
-        const student = Client(`http://localhost:${(httpServer.address() as any).port}`);
+        const mentor = Client(`http://localhost:${PORT}`);
+        const student = Client(`http://localhost:${PORT}`);
 
         mentor.on("connect", () => {
             mentor.emit("joinCodeBlock", codeBlockId);
@@ -80,7 +71,6 @@ describe("socket.io tests", () => {
                 if (role === "student") {
                     mentor.disconnect();
                     console.log("Mentor disconnected", "student connection status: ", student.connected);
-                    expect(student.connected).toBe(false);
                 }
             });
         });
@@ -88,17 +78,11 @@ describe("socket.io tests", () => {
         student.on("disconnect", () => {
             mentor.close();
             student.close();
-            done();
         });
+
+        setTimeout(() => {
+            expect(student.connected).toBe(false);
+            done();
+        }, 1000);
     });
-
-
-
-
-
-
-
-
-
-
 });

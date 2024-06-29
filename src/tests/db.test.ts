@@ -6,8 +6,9 @@ describe('Database Connection', () => {
         await connectDB();
     });
 
-    it('should be connected to the database', () => {
+    it('should be connected to the database', (done) => {
         expect(mongoose.connection.readyState).toBe(1);
+        done();
     });
 
     afterAll(async () => {

@@ -24,7 +24,6 @@ export const getCodeBlocksTitles = async (req: Request, res: Response): Promise<
 export const getCodeBlockById = async (req: Request, res: Response): Promise<void> => {
     try {
         const codeBlock: ICodeBlock | null = await CodeBlock.findById(req.params.id);
-        console.log(codeBlock)
         if (!codeBlock) {
             res.status(404).json({ message: "Code Block not found" });
             return;

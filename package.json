@@ -6,7 +6,7 @@
     "start": "node dist/server.js",
     "build": "tsc",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "test": "jest"
+    "test": "NODE_ENV=test jest --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "@types/cors": "^2.8.17",

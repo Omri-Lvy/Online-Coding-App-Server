@@ -2,9 +2,9 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  globalSetup: '<rootDir>/src/tests/jest.setup.ts',
+  globalTeardown: '<rootDir>/src/tests/jest.teardown.ts',
   testMatch: ['<rootDir>/src/tests/**/*.test.ts'],
-  setupFiles: ['<rootDir>/jest.setup.ts'],
-  testTimeout: 10000,
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   }

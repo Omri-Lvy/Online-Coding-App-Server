@@ -80,18 +80,33 @@ io.on('connection', (socket) => {
 });
 
 const PORT: string | number = process.env.PORT || 3000;
-httpServer.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    httpServer.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
+
 
 const shutdown = () => {
-    httpServer.close(() => {
-        console.log('Server closed');
-        disconnectDB();
+    return new Promise((resolve, reject) => {
+        io.close(() => {
+            if (httpServer.listening) {
+                httpServer.close((err) => {
+                    if (err) {
+                        console.error('Error closing the server:', err);
+                        reject(err);
+                        return;
+                    }
+                    disconnectDB().then(resolve).catch(reject);
+                    console.log('Server and DB connections closed');
+                });
+            }
+        });
     });
 };
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+process.on('SIGINT', () => shutdown().then(() => process.exit()));
+process.on('SIGTERM', () => shutdown().then(() => process.exit()));
 
-export { httpServer, io, app, shutdown };
+export default app;
+export { httpServer };
