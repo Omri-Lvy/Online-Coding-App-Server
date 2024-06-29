@@ -21,8 +21,13 @@ const io = new Server(httpServer, {
 
 connectDB("codeblocks");
 
+const corsOptions = {
+    origin: origin,
+    optionsSuccessStatus: 200
+};
+
 server.use(express.json());
-server.use(cors());
+server.use(cors(corsOptions));
 
 server.use('/code-blocks', codeBlocksRouter);
 
