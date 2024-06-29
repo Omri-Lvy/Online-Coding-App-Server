@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { getCodeBlocksTitles, getCodeBlockById } from '../controllers/codeBlockController';
+import {getCodeBlocksTitles, getCodeBlockById, getCodeBlockByTitle} from '../controllers/codeBlockController';
 
 const router: Router = Router();
 
 router.get('/', getCodeBlocksTitles);
-router.get('/:id', getCodeBlockById);
+router.get('/id/:id', getCodeBlockById);
+router.get('/title/:title', getCodeBlockByTitle);
 
 export default router;
